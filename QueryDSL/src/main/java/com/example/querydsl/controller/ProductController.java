@@ -36,4 +36,9 @@ public class ProductController {
     public List<Products> searchProductSupport(@PathVariable String productName) {
         return productService.searchProductBysupport(productName);
     }
+
+    @GetMapping("/productImpl/{productName}")
+    public List<Products> searchProductImpl(@PathVariable String productName) {
+        return productService.searchProductByImpl(productName);
+    }
 }

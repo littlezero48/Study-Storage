@@ -18,7 +18,7 @@ import java.util.List;
 public class ProductService {
 
     private final QuerydslRepository querydslRepository;
-//    private final ProductRepository productRepository;
+    private final ProductRepository productRepository;
     private final ProductRepositorySupport productRepositorySupport;
 
     public List<Products> getSearchProduct(SearchCondition searchCondition) {
@@ -31,6 +31,10 @@ public class ProductService {
 
     public List<Products> searchProductBysupport(String productName) {
         return productRepositorySupport.findByProductId(productName);
+    }
+
+    public List<Products> searchProductByImpl(String productName) {
+        return productRepository.findByProductName(productName);
     }
 
 }
