@@ -1,4 +1,4 @@
-package com.example.querydsl.repository;
+package com.example.querydsl.repository.noImplnoExtend;
 
 import com.example.querydsl.domain.Products;
 import com.example.querydsl.dto.SearchCondition;
