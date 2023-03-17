@@ -3,6 +3,8 @@ package com.example.querydsl.controller;
 import com.example.querydsl.domain.Products;
 import com.example.querydsl.dto.SearchCondition;
 import com.example.querydsl.service.ProductService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,5 +26,8 @@ public class ProductController {
         return productService.getSearchProduct(searchCondition);
     }
 
-
+    @GetMapping("/productPageable")
+    public Page<Products> searchProduct(@RequestBody SearchCondition searchCondition, Pageable pageable) {
+        return productService.searchProductPagable(searchCondition, pageable);
+    }
 }

@@ -7,6 +7,9 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -33,6 +36,34 @@ public class QuerydslRepository {
                 )
                 .orderBy(orderProductBy(searchCondition.getOrderByPoint(), searchCondition.getDirection()))
                 .fetch();
+    }
+
+    public Page<Products> searchProductPagable (SearchCondition searchCondition, Pageable pageable) {
+        List<Products> productsList = jpaQueryFactory
+                .selectFrom(products)
+                .where(
+                        productNameContain(searchCondition.getKeyword()),
+                        bigCategoryEq(searchCondition.getBigCategory()),
+                        smallCategoryEq(searchCondition.getSmallCategory()),
+                        priceBw(searchCondition.getPriceMin(), searchCondition.getPriceMax())
+                )
+                .orderBy(orderProductBy(searchCondition.getOrderByPoint(), searchCondition.getDirection()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long count = jpaQueryFactory
+                .select(products.id.count())
+                .from(products)
+                .where(
+                        productNameContain(searchCondition.getKeyword()),
+                        bigCategoryEq(searchCondition.getBigCategory()),
+                        smallCategoryEq(searchCondition.getSmallCategory()),
+                        priceBw(searchCondition.getPriceMin(), searchCondition.getPriceMax())
+                )
+                .fetchOne();
+
+        return new PageImpl<>(productsList, pageable, count);
     }
 
     private OrderSpecifier<?> orderProductBy(String orderByPoint, Order direction) {
