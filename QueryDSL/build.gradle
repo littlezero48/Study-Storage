@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.9'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'			// querydsl 플러그인 적용
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // querydsl 의존성 추가
+    def queryDslVersion = "5.0.0"
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"	// buildscript에서 적용한 변수가 여기에 적용
+    implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+
+def querydslDir = "$buildDir/generated/querydsl"			// def 키워드로 타입없이 변수 선언, 그 변수에 폴더 경로 저장
+
+querydsl {
+    jpa = true														// JPA 사용여부 설정
+    querydslSourcesDir = querydslDir								// 사용할 경로 설정
+}
+
+sourceSets {														// build시 사용할 sourceSet 추가
+    main.java.srcDir querydslDir									// source 폴더 경로를 위의 변수 값으로 변경
+}
+
+compileQuerydsl {													// queryDSL 컴파일시 사용할 옵션 설정
+    options.annotationProcessorPath = configurations.querydsl
+}
+
+configurations {													// build 옵션
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    querydsl.extendsFrom compileClasspath							// querydsl이 compileClasspath를 상속하도록 설정
+}
+
